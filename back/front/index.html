@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        background-color: black;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Home</h2>
+    <a href="/login">Login</a>
+    <ul id="userInfo"></ul>
+    <script>
+      const userInfoList = document.getElementById("userInfo");
+      async function fetchUserInfo() {
+        const accessToken = localStorage.getItem("access_token");
+        const req = await fetch("/user_info", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ access_token: accessToken }),
+        });
+        if (req.status === 401) {
+          alert("Unauthorized");
+          window.location.replace("/login");
+        }
+        const userInfo = await req.json();
+        console.debug(userInfo);
+        Object.entries(userInfo).forEach(([key, value]) => {
+          const userRow = document.createElement("li");
+          const rowLabel = document.createElement("label");
+          rowLabel.htmlFor = key;
+          rowLabel.append(document.createTextNode(key + ": "));
+          userRow.append(rowLabel);
+          if (key == "avatar_url") {
+            const avatarImg = document.createElement("img");
+            avatarImg.src = value;
+            avatarImg.style.width = "5rem";
+            avatarImg.style.height = "5rem";
+            userRow.append(document.createElement("br"));
+            userRow.append(avatarImg);
+          } else {
+            const rowValue = document.createElement("span");
+            rowValue.id = key;
+            rowValue.append(document.createTextNode(value));
+            userRow.append(value);
+          }
+          userInfoList.appendChild(userRow);
+        });
+      }
+      fetchUserInfo();
+    </script>
+  </body>
+</html>

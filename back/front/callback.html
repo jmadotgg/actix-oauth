@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        background-color: black;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <span>Redirecting...</span>
+    <script>
+      function redirect() {
+        const search = window.location.search;
+        const urlSearchParams = new URLSearchParams(search);
+        const [code, state] = [
+          urlSearchParams.get("code"),
+          urlSearchParams.get("state"),
+        ];
+        fetchAccessToken(code, state);
+      }
+      async function fetchAccessToken(code, state) {
+        const req = await fetch("/auth/github/access_token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code, state }),
+        });
+        const { access_token, _scope, _token_type } = await req.json();
+        localStorage.setItem("access_token", access_token);
+        // Redirect back to home
+        window.location.replace("/");
+      }
+      redirect();
+    </script>
+  </body>
+</html>

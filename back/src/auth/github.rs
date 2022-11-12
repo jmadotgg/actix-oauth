@@ -1,21 +1,13 @@
 use actix_files::NamedFile;
 use actix_web::{get, http::Uri, post, web, HttpResponse, Responder};
-use reqwest;
 
-use crate::{
-    auth::lib::{AccessTokenRequestError, AccessTokenResponse, OauthResponse},
-    config::OAuthConfig,
-};
+use crate::config::OAuthConfig;
 
-pub fn auth_config(cfg: &mut web::ServiceConfig) {
-    cfg.service(github)
-        .service(github_callback)
-        .service(github_access_token);
-}
+use super::lib::{AccessTokenRequestError, AccessTokenResponse, OauthResponse};
 
 /// 1. Redirect user to GitHub OAuth Login
 #[get("/github")]
-async fn github(oauth_config: web::Data<OAuthConfig>) -> impl Responder {
+async fn github_init(oauth_config: web::Data<OAuthConfig>) -> impl Responder {
     let github_oauth_uri = format!(
         "{}?client_id={}&redirect_uri={}&scope={}&state={}&allow_signup={}",
         oauth_config.oauth_url.clone(),
@@ -29,8 +21,6 @@ async fn github(oauth_config: web::Data<OAuthConfig>) -> impl Responder {
     .parse::<Uri>()
     .expect("Invalid URI")
     .to_string();
-
-    println!("{}", github_oauth_uri);
 
     HttpResponse::Found()
         .insert_header(("Location", github_oauth_uri))

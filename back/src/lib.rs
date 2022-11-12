@@ -2,6 +2,7 @@ use derive_more::Display;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 
+pub mod api;
 pub mod auth;
 pub mod config;
 

@@ -30,7 +30,7 @@
         });
         if (req.status === 401) {
           alert("Unauthorized");
-          window.location.replace("/login");
+          window.location.replace("/auth/login");
         }
         const userInfo = await req.json();
         console.debug(userInfo);

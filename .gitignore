@@ -1,2 +1,5 @@
 /back/target
 /back/.env
+
+# Self-signed Certificates
+*.pem

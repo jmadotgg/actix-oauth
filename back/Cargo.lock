@@ -285,6 +285,7 @@ dependencies = [
  "actix-web",
  "derive_more",
  "dotenv",
+ "openssl",
  "rand",
  "reqwest",
  "serde",

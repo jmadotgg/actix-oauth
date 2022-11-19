@@ -12,10 +12,13 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: back
 
     steps:
       - uses: actions/checkout@v3
-      - working_directory: back
       - name: Build
         run: cargo build --verbose
       - name: Run tests

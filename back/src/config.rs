@@ -18,15 +18,15 @@ pub struct OAuthConfig {
 impl OAuthConfig {
     pub fn new() -> Result<OAuthConfig, VarError> {
         let oauth_config = OAuthConfig {
-            app_url: env("APP_URL")?.to_string(),
-            callback_url: env("CALLBACK_URL")?.to_string(),
-            oauth_url: env("OAUTH_URL")?.to_string(),
-            access_token_url: env("ACCESS_TOKEN_URL")?.to_string(),
-            client_id: env("CLIENT_ID")?.to_string(),
-            client_secret: env("CLIENT_SECRET")?.to_string(),
-            scopes: env("SCOPES")?.to_string(),
+            app_url: env("APP_URL")?,
+            callback_url: env("CALLBACK_URL")?,
+            oauth_url: env("OAUTH_URL")?,
+            access_token_url: env("ACCESS_TOKEN_URL")?,
+            client_id: env("CLIENT_ID")?,
+            client_secret: env("CLIENT_SECRET")?,
+            scopes: env("SCOPES")?,
             state: random_state(12),
-            allow_signup: env("ALLOW_SIGNUP")?.to_string(),
+            allow_signup: env("ALLOW_SIGNUP")?,
         };
         Ok(oauth_config)
     }

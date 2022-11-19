@@ -3,3 +3,4 @@
 
 # Self-signed Certificates
 *.pem
+.DS_Store

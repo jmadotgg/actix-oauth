@@ -1,7 +1,9 @@
 use actix_files::NamedFile;
 use actix_web::{get, http::Uri, post, web, HttpResponse, Responder};
 
-use crate::config::OAuthConfig;
+use crate::{
+    api::auth_token::TokenResponse, auth::common::encode_token, config::OAuthConfig, User,
+};
 
 use super::lib::{AccessTokenRequestError, AccessTokenResponse, OauthResponse};
 
@@ -39,7 +41,8 @@ async fn github_callback() -> Result<NamedFile, actix_web::error::Error> {
 async fn github_access_token(
     oauth_response: web::Json<OauthResponse>,
     oauth_config: web::Data<OAuthConfig>,
-) -> Result<web::Json<AccessTokenResponse>, AccessTokenRequestError> {
+    secret: web::Data<String>,
+) -> Result<web::Json<TokenResponse>, AccessTokenRequestError> {
     let OauthResponse { code, state } = oauth_response.into_inner();
     if state != oauth_config.state {
         return Err(AccessTokenRequestError {
@@ -60,5 +63,18 @@ async fn github_access_token(
         .send()
         .await?;
 
-    Ok(web::Json(res.json::<AccessTokenResponse>().await?))
+    let access_token_response = res.json::<AccessTokenResponse>().await?;
+    let res = client
+        .get("https://api.github.com/user")
+        // GitHub only permits requests with User-Agent header
+        .header("User-Agent", "request")
+        .bearer_auth(access_token_response.access_token)
+        .send()
+        .await?;
+
+    let user = res.json::<User>().await?;
+    // Maybe request user information and id to map user to database id
+    let id: usize = 34234234234; // generate in database
+    let token = encode_token(user.id, &secret);
+    Ok(web::Json(TokenResponse { token }))
 }

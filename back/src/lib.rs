@@ -18,7 +18,7 @@ pub struct UserReq {
 }
 #[derive(Serialize, Deserialize, Debug)]
 pub struct User {
-    id: u32,
+    id: usize,
     name: String,
     location: String,
     email: Option<String>,

@@ -30,8 +30,9 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ code, state }),
         });
-        const { access_token, _scope, _token_type } = await req.json();
-        localStorage.setItem("access_token", access_token);
+        const { token } = await req.json();
+        // App access token
+        localStorage.setItem("access_token", token);
         // Redirect back to home
         window.location.replace("/");
       }

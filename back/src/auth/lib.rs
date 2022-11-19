@@ -10,7 +10,7 @@ pub struct OauthResponse {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AccessTokenResponse {
-    access_token: String,
+    pub access_token: String,
     scope: String,
     token_type: String,
 }

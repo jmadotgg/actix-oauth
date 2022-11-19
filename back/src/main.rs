@@ -1,5 +1,5 @@
 use actix_files::NamedFile;
-use actix_web::{get, web, App, Error, HttpServer};
+use actix_web::{get, guard, web, App, Error, HttpServer};
 use back::{api::common::api_config, auth::common::auth_config, config::OAuthConfig};
 use dotenv::dotenv;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
@@ -19,6 +19,8 @@ async fn main() -> std::io::Result<()> {
     let oauth_config =
         web::Data::new(OAuthConfig::new().expect("Missing OAuth config parameter/s"));
 
+    let secret = web::Data::new(var("SECRET").expect("SECRET is not set"));
+
     // load TLS keys
     // to create a self-signed temporary cert for testing:
     // `openssl req -x509 -newkey rsa:4096 -nodes -keyout key.pem -out cert.pem -days 365 -subj '/CN=localhost'`
@@ -34,9 +36,16 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::scope("auth")
                     .configure(auth_config)
+                    .app_data(secret.clone())
                     .app_data(oauth_config.clone()),
             )
-            .service(web::scope("api").configure(api_config))
+            .service(
+                web::scope("api")
+                    .app_data(oauth_config.clone())
+                    .app_data(secret.clone())
+                    // Use FromRequest trait for validation here
+                    .configure(api_config),
+            )
     })
     .bind_openssl(server_config, builder)?
     .run()

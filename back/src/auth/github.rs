@@ -74,7 +74,7 @@ async fn github_access_token(
 
     let user = res.json::<User>().await?;
     // Maybe request user information and id to map user to database id
-    let id: usize = 34234234234; // generate in database
+    let _id: usize = 34234234234; // generate in database
     let token = encode_token(user.id, &secret);
     Ok(web::Json(TokenResponse { token }))
 }

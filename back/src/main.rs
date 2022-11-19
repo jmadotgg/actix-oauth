@@ -1,5 +1,5 @@
 use actix_files::NamedFile;
-use actix_web::{get, guard, web, App, Error, HttpServer};
+use actix_web::{get, web, App, Error, HttpServer};
 use back::{api::common::api_config, auth::common::auth_config, config::OAuthConfig};
 use dotenv::dotenv;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
